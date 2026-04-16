@@ -1,6 +1,6 @@
 # 🔍 pr-check
 
-Automated analysis of failing Renovate/Dependabot PRs. Receives webhooks, analyzes failures via GitHub API, and emails actionable fix suggestions.
+Automated analysis of failing Renovate/Dependabot PRs. Receives webhooks, analyzes failures via GitHub API, and posts analysis as PR comments.
 
 ## How It Works
 
@@ -18,14 +18,31 @@ GitHub Actions analyzes PR via API
    - Suggests specific fixes
            │
            ▼
-  Email sent with fix instructions
+  Comment posted on original PR
 ```
+
+## MVP Status
+
+**Current scope:** Limited to allowlisted repos during testing.
+
+**Allowed repos:**
+- `bcgov/quickstart-openshift-backends`
+- `bcgov/nr-fom`
+- `DerekRoberts/vexilon`
+
+Add more to `ALLOWED_REPOS` in `scripts/analyze-pr.js` when ready.
 
 ## Setup
 
 ### 1. Create Repository
 
-Create `DerekRoberts/pr-check` on GitHub and push this code.
+```bash
+gh repo create DerekRoberts/pr-check --public
+cd /path/to/pr-check
+git remote add origin https://github.com/DerekRoberts/pr-check.git
+git branch -M main
+git push -u origin main
+```
 
 ### 2. Configure Secrets
 
@@ -33,19 +50,13 @@ Go to Settings → Secrets and variables → Actions, add:
 
 | Secret | Description |
 |--------|-------------|
-| `EMAIL_TO` | Your email (derek.roberts@gmail.com) |
-| `EMAIL_FROM` | Sender email (derek.roberts.bot@gmail.com) |
-| `SMTP_HOST` | smtp.gmail.com (or your provider) |
-| `SMTP_USER` | Email username |
-| `SMTP_PASS` | Email app password |
-| `GH_PAT` | GitHub Personal Access Token with `repo` scope |
+| `GH_PAT` | GitHub Personal Access Token with `repo` and `pull_requests:write` scope |
 
 ### 3. Update Renovate Monitor
 
-In your Renovate monitor orchestrator, update the `notifyKiloCloud` function to call this webhook:
+In your Renovate monitor orchestrator, update to call this webhook:
 
 ```javascript
-// Instead of sending email, trigger GitHub Actions
 const webhookUrl = 'https://api.github.com/repos/DerekRoberts/pr-check/dispatches';
 const response = await fetch(webhookUrl, {
   method: 'POST',
@@ -86,7 +97,11 @@ gh workflow run analyze-pr.yml \
 
 ## Sample Output
 
-```
+Posted as a PR comment:
+
+```markdown
+## 🤖 pr-check Analysis
+
 PR-CHECK ANALYSIS REPORT
 ========================
 
@@ -110,14 +125,18 @@ SUGGESTED FIXES:
 2. [HIGH] Review test failures
    Command: pytest
    Dependency update may have breaking changes
+
+---
+*This is an automated analysis. Please review and apply fixes as needed.*
 ```
 
 ## Future Enhancements
 
+- [ ] Remove allowlist after MVP testing
 - [ ] Auto-apply fixes for DerekRoberts/* repos
 - [ ] Support more project types (Go, Rust, Java)
-- [ ] Slack/Teams notifications
-- [ ] Web dashboard of pending fixes
+- [ ] Parse actual error logs for smarter suggestions
+- [ ] Read changelogs to highlight breaking changes
 
 ## License
 

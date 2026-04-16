@@ -77,8 +77,8 @@ async function analyzePR() {
     console.log('\n📊 Analysis Complete');
     console.log(report);
     
-    // 6. Send email notification
-    await sendEmail(report, inputs.repo, inputs.prNumber);
+    // 6. Post comment on PR
+    await postComment(report, inputs.repo, inputs.prNumber);
     
   } catch (error) {
     console.error('❌ Analysis failed:', error.message);
@@ -264,35 +264,37 @@ Generated: ${new Date().toISOString()}
   return report;
 }
 
-async function sendEmail(report, repo, prNumber) {
-  const emailTo = process.env.EMAIL_TO;
-  const emailFrom = process.env.EMAIL_FROM;
-  
-  if (!emailTo || !emailFrom) {
-    console.log('⚠️ Email credentials not configured. Skipping email.');
-    console.log('Report:');
+// MVP: Allowed repos list
+const ALLOWED_REPOS = [
+  'bcgov/quickstart-openshift-backends',
+  'bcgov/nr-fom',
+  'DerekRoberts/vexilon',
+  // Add more as needed
+];
+
+async function postComment(report, repo, prNumber) {
+  // Check if repo is in allowlist during MVP
+  if (!ALLOWED_REPOS.includes(repo)) {
+    console.log(`⚠️ Repo ${repo} not in MVP allowlist. Skipping.`);
+    console.log('Allowed repos:', ALLOWED_REPOS.join(', '));
+    console.log('\nReport that would have been posted:');
     console.log(report);
     return;
   }
   
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-  
-  await transporter.sendMail({
-    from: emailFrom,
-    to: emailTo,
-    subject: `🔧 Kilo Cloud: Fix needed for ${repo}#${prNumber}`,
-    text: report,
-  });
-  
-  console.log(`📧 Email sent to ${emailTo}`);
+  try {
+    await octokit.rest.issues.createComment({
+      owner: repo.split('/')[0],
+      repo: repo.split('/')[1],
+      issue_number: prNumber,
+      body: `## 🤖 pr-check Analysis\n\n${report}\n\n---\n*This is an automated analysis. Please review and apply fixes as needed.*`,
+    });
+    console.log(`💬 Comment posted to ${repo}#${prNumber}`);
+  } catch (error) {
+    console.error('❌ Failed to post comment:', error.message);
+    console.log('\nReport:');
+    console.log(report);
+  }
 }
 
 // Run analysis

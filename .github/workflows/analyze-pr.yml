@@ -22,8 +22,9 @@ jobs:
       contents: read
       issues: read
       checks: read
+      pull-requests: write  # Needed to comment on PRs
     steps:
-      - name: Checkout Kilo Cloud
+      - name: Checkout pr-check
         uses: actions/checkout@v4
         
       - name: Setup Node.js
@@ -32,17 +33,12 @@ jobs:
           node-version: '20'
           
       - name: Install dependencies
-        run: npm install @octokit/rest nodemailer
+        run: npm install @octokit/rest
         
       - name: Analyze PR
         id: analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
         run: node scripts/analyze-pr.js
         
       - name: Output Results
