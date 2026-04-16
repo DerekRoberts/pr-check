@@ -1,0 +1,54 @@
+name: Kilo Cloud - Analyze Failing PR
+
+on:
+  repository_dispatch:
+    types: [renovate-failed-pr]
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repository (owner/repo)'
+        required: true
+      pr_number:
+        description: 'PR number'
+        required: true
+      pr_url:
+        description: 'PR URL'
+        required: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: read
+    steps:
+      - name: Checkout Kilo Cloud
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm install @octokit/rest nodemailer
+        
+      - name: Analyze PR
+        id: analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        run: node scripts/analyze-pr.js
+        
+      - name: Output Results
+        run: |
+          echo "## Analysis Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Repository: ${{ github.event.inputs.repo || github.event.client_payload.repo }}" >> $GITHUB_STEP_SUMMARY
+          echo "PR: #${{ github.event.inputs.pr_number || github.event.client_payload.pr_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Status: Complete" >> $GITHUB_STEP_SUMMARY

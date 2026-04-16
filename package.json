@@ -1,0 +1,16 @@
+{
+  "name": "kilo-cloud",
+  "version": "1.0.0",
+  "description": "Kilo Cloud - Automated PR analysis for failing Renovate/Dependabot updates",
+  "main": "scripts/analyze-pr.js",
+  "scripts": {
+    "analyze": "node scripts/analyze-pr.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "nodemailer": "^6.9.7"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
