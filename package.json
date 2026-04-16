@@ -1,7 +1,7 @@
 {
-  "name": "kilo-cloud",
+  "name": "pr-check",
   "version": "1.0.0",
-  "description": "Kilo Cloud - Automated PR analysis for failing Renovate/Dependabot updates",
+  "description": "pr-check - Automated PR analysis for failing Renovate/Dependabot updates",
   "main": "scripts/analyze-pr.js",
   "scripts": {
     "analyze": "node scripts/analyze-pr.js"

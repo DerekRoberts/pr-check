@@ -1,4 +1,4 @@
-name: Kilo Cloud - Analyze Failing PR
+name: pr-check - Analyze Failing PR
 
 on:
   repository_dispatch:

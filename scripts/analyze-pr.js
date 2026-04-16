@@ -199,8 +199,8 @@ async function performAnalysis(files, failingChecks, pr) {
 }
 
 function generateReport(repo, prNumber, pr, failingChecks, files, analysis) {
-  let report = `KILO CLOUD ANALYSIS REPORT
-==========================
+  let report = `PR-CHECK ANALYSIS REPORT
+========================
 
 Repository: ${repo}
 PR: #${prNumber} - ${pr.title}

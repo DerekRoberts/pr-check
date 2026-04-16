@@ -1,4 +1,4 @@
-# ☁️ Kilo Cloud
+# 🔍 pr-check
 
 Automated analysis of failing Renovate/Dependabot PRs. Receives webhooks, analyzes failures via GitHub API, and emails actionable fix suggestions.
 
@@ -8,7 +8,7 @@ Automated analysis of failing Renovate/Dependabot PRs. Receives webhooks, analyz
 Renovate Monitor detects failing PR
            │
            ▼
-  POST to Kilo Cloud webhook
+  POST to pr-check webhook
            │
            ▼
 GitHub Actions analyzes PR via API
@@ -25,7 +25,7 @@ GitHub Actions analyzes PR via API
 
 ### 1. Create Repository
 
-Create `DerekRoberts/kilo-cloud` on GitHub and push this code.
+Create `DerekRoberts/pr-check` on GitHub and push this code.
 
 ### 2. Configure Secrets
 
@@ -34,7 +34,7 @@ Go to Settings → Secrets and variables → Actions, add:
 | Secret | Description |
 |--------|-------------|
 | `EMAIL_TO` | Your email (derek.roberts@gmail.com) |
-| `EMAIL_FROM` | Sender email (can be same) |
+| `EMAIL_FROM` | Sender email (derek.roberts.bot@gmail.com) |
 | `SMTP_HOST` | smtp.gmail.com (or your provider) |
 | `SMTP_USER` | Email username |
 | `SMTP_PASS` | Email app password |
@@ -46,7 +46,7 @@ In your Renovate monitor orchestrator, update the `notifyKiloCloud` function to 
 
 ```javascript
 // Instead of sending email, trigger GitHub Actions
-const webhookUrl = 'https://api.github.com/repos/DerekRoberts/kilo-cloud/dispatches';
+const webhookUrl = 'https://api.github.com/repos/DerekRoberts/pr-check/dispatches';
 const response = await fetch(webhookUrl, {
   method: 'POST',
   headers: {
@@ -70,7 +70,7 @@ Trigger manually:
 
 ```bash
 gh workflow run analyze-pr.yml \
-  --repo DerekRoberts/kilo-cloud \
+  --repo DerekRoberts/pr-check \
   --field repo="bcgov/quickstart-openshift-backends" \
   --field pr_number="463" \
   --field pr_url="https://github.com/bcgov/quickstart-openshift-backends/pull/463"
@@ -87,8 +87,8 @@ gh workflow run analyze-pr.yml \
 ## Sample Output
 
 ```
-KILO CLOUD ANALYSIS REPORT
-==========================
+PR-CHECK ANALYSIS REPORT
+========================
 
 Repository: bcgov/quickstart-openshift-backends
 PR: #463 - chore(deps): update dependency pytest to v9.0.3 [security]
