@@ -38,7 +38,7 @@ jobs:
       - name: Analyze PR
         id: analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: node scripts/analyze-pr.js
         
       - name: Output Results
