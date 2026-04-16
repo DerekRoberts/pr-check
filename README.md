@@ -26,8 +26,9 @@ GitHub Actions analyzes PR via API
 **Current scope:** Limited to allowlisted repos during testing.
 
 **Allowed repos:**
+- `bcgov/quickstart-openshift`
 - `bcgov/quickstart-openshift-backends`
-- `bcgov/nr-fom`
+- `bcgov/pubcode`
 - `DerekRoberts/vexilon`
 
 Add more to `ALLOWED_REPOS` in `scripts/analyze-pr.js` when ready.

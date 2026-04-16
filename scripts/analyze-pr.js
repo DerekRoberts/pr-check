@@ -266,8 +266,9 @@ Generated: ${new Date().toISOString()}
 
 // MVP: Allowed repos list
 const ALLOWED_REPOS = [
+  'bcgov/quickstart-openshift',
   'bcgov/quickstart-openshift-backends',
-  'bcgov/nr-fom',
+  'bcgov/pubcode',
   'DerekRoberts/vexilon',
   // Add more as needed
 ];
